@@ -9,8 +9,10 @@ import (
 	"os"
 	"os/exec"
 	"os/user"
+	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // Adapted from https://github.com/morgant/tools-osx/blob/master/src/trash
@@ -81,26 +83,69 @@ func pathVolume(filePath string) string {
 	return volumeName
 }
 
+func fileTrashPath(filePath string) (string, error) {
+	volumeName := pathVolume(filePath)
+	trashPath := ""
+	if volumeName != "" {
+		trashPath = fmt.Sprintf("/Volumes/%s/.Trashes/%d", volumeName, os.Getuid())
+	} else {
+		user, err := user.Current()
+		if err != nil {
+			return "", err
+		}
+		trashPath = fmt.Sprintf("/Users/%s/.Trash", user.Username)
+	}
+	return trashPath, nil
+}
+
+func fileExists(filePath string) bool {
+	_, err := os.Stat(filePath)
+	return err == nil
+}
+
 // filePath must be an absolute path
-func MoveToTrash(filePath string) error {
+func MoveToTrash(filePath string) (string, error) {
+	if !fileExists(filePath) {
+		return "", errors.New("file does not exist or is not accessible")
+	}
+
 	ok, err := haveScriptableFinder()
 
 	if ok {
-		cmd := exec.Command("/usr/bin/osascript", "-e", "tell application \"Finder\" to delete POSIX file \""+filePath+"\"")
-		var stdout bytes.Buffer
-		cmd.Stdout = &stdout
-		var stderr bytes.Buffer
-		cmd.Stderr = &stderr
-		err := cmd.Run()
-		if err != nil {
-			return errors.New(fmt.Sprintf("%s: %s %s", err, stdout.String(), stderr.String()))
+		// Do this in a loop because Finder sometime randomly fails with this error:
+		//     29:106: execution error: Finder got an error: Handler can’t handle objects of this class. (-10010)
+		// Repeating the operation usually fixes the issue.
+		maxLoop := 3
+		for i := 0; i < maxLoop; i++ {
+			time.Sleep(time.Duration(i*500) * time.Millisecond)
+
+			cmd := exec.Command("/usr/bin/osascript", "-e", "tell application \"Finder\" to delete POSIX file \""+filePath+"\"")
+			var stdout bytes.Buffer
+			cmd.Stdout = &stdout
+			var stderr bytes.Buffer
+			cmd.Stderr = &stderr
+			err := cmd.Run()
+
+			if err != nil {
+				err = errors.New(fmt.Sprintf("%s: %s %s", err, stdout.String(), stderr.String()))
+			}
+
+			if stderr.Len() > 0 {
+				err = errors.New(fmt.Sprintf("%s, %s", stdout.String(), stderr.String()))
+			}
+
+			if err != nil {
+				if i >= maxLoop-1 {
+					return "", err
+				} else {
+					continue
+				}
+			}
+
+			break
 		}
-		if stderr.Len() > 0 {
-			return errors.New(fmt.Sprintf("%s, %s", stdout.String(), stderr.String()))
-		}
-		return nil
 	} else {
-		return errors.New(fmt.Sprintf("scriptable Finder not available: %s", err))
+		return "", errors.New(fmt.Sprintf("scriptable Finder not available: %s", err))
 
 		// TODO: maybe based on https://github.com/morgant/tools-osx/blob/master/src/trash, move
 		// the file to trash manually.
@@ -122,5 +167,37 @@ func MoveToTrash(filePath string) error {
 		// }
 	}
 
-	return nil
+	trashPath, err := fileTrashPath(filePath)
+	if err != nil {
+		return "", err
+	}
+
+	filename := filepath.Base(filePath)
+	ext := filepath.Ext(filePath)
+	filenameNoExt := filename[0 : len(filename)-len(ext)]
+
+	possibleFiles, err := filepath.Glob(trashPath + "/" + filenameNoExt + " ??.??.??" + ext)
+	if err != nil {
+		return "", err
+	}
+
+	latestFile := ""
+	var latestTime int64
+	for _, f := range possibleFiles {
+		fileInfo, err := os.Stat(f)
+		if err != nil {
+			continue
+		}
+		modTime := fileInfo.ModTime().UnixNano()
+		if modTime > latestTime {
+			latestTime = modTime
+			latestFile = f
+		}
+	}
+
+	if latestFile == "" {
+		return "", errors.New("could not find path of file in trash")
+	}
+
+	return latestFile, nil
 }

@@ -32,7 +32,7 @@ func touch(filePath string) {
 	ioutil.WriteFile(filePath, []byte(""), 0700)
 }
 
-func fileExists(filePath string) bool {
+func test_fileExists(filePath string) bool {
 	_, err := os.Stat(filePath)
 	return err == nil
 }
@@ -44,12 +44,12 @@ func Test_MoveToTrash(t *testing.T) {
 	filePath := testDir() + "/test"
 	touch(filePath)
 
-	err := MoveToTrash(filePath)
+	trashPath, err := MoveToTrash(filePath)
 	if err != nil {
 		t.Errorf("Expected no error, got %s", err)
 	}
 
-	if fileExists(filePath) {
+	if test_fileExists(filePath) {
 		t.Error("File was not deleted")
 	}
 }
