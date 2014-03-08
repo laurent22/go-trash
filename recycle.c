@@ -1,3 +1,5 @@
+// +build windows
+
 // Slightly modified version of recycle.c from Matt Ginzton - http://www.maddogsw.com/cmdutils/
 // Mainly replaced BOOL type by int to make it easier to call the function from Go.
 //

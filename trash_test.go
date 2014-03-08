@@ -44,7 +44,7 @@ func Test_MoveToTrash(t *testing.T) {
 	filePath := testDir() + "/test"
 	touch(filePath)
 
-	trashPath, err := MoveToTrash(filePath)
+	_, err := MoveToTrash(filePath)
 	if err != nil {
 		t.Errorf("Expected no error, got %s", err)
 	}

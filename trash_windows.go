@@ -1,3 +1,5 @@
+// +build windows
+
 package trash
 
 /*
@@ -11,8 +13,6 @@ import (
 )
 
 func MoveToTrash(filePath string) (string, error) {
-	fmt.Println("here")
-
 	files := []string{filePath}
 	C_files := C.makeCharArray(C.int(len(files)))
 	defer C.freeCharArray(C_files, C.int(len(files)))
