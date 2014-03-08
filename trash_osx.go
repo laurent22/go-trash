@@ -29,7 +29,7 @@ func haveScriptableFinder() (bool, error) {
 	}
 
 	// Find Finder process ID, if it is running
-	finderPid := 0	
+	finderPid := 0
 	lines := strings.Split(string(output), "\n")
 	for _, line := range lines {
 		if strings.Index(line, "CoreServices/Finder.app") >= 0 {
@@ -50,11 +50,11 @@ func haveScriptableFinder() (bool, error) {
 			}
 		}
 	}
-	
+
 	if finderPid <= 0 {
 		return false, errors.New("could not find Finder process ID")
 	}
-	
+
 	// TODO: test with screen
 	if os.Getenv("STY") != "" {
 		return false, errors.New("currently running in screen")
@@ -73,7 +73,7 @@ func pathVolume(filePath string) string {
 		return ""
 	}
 	volumeName := pieces[1]
-	cmd := exec.Command("readlink", "/Volumes/" + volumeName)
+	cmd := exec.Command("readlink", "/Volumes/"+volumeName)
 	output, _ := cmd.Output()
 	if strings.Trim(string(output), " \t\r\n") == "/" {
 		return ""
@@ -86,7 +86,7 @@ func MoveToTrash(filePath string) error {
 	ok, err := haveScriptableFinder()
 
 	if ok {
-		cmd := exec.Command("/usr/bin/osascript", "-e", "tell application \"Finder\" to delete POSIX file \"" + filePath + "\"")
+		cmd := exec.Command("/usr/bin/osascript", "-e", "tell application \"Finder\" to delete POSIX file \""+filePath+"\"")
 		var stdout bytes.Buffer
 		cmd.Stdout = &stdout
 		var stderr bytes.Buffer
@@ -95,17 +95,16 @@ func MoveToTrash(filePath string) error {
 		if err != nil {
 			return errors.New(fmt.Sprintf("%s: %s %s", err, stdout.String(), stderr.String()))
 		}
-		// TODO: more efficient way to check length
 		if stderr.Len() > 0 {
 			return errors.New(fmt.Sprintf("%s, %s", stdout.String(), stderr.String()))
 		}
 		return nil
 	} else {
 		return errors.New(fmt.Sprintf("scriptable Finder not available: %s", err))
-		
+
 		// TODO: maybe based on https://github.com/morgant/tools-osx/blob/master/src/trash, move
 		// the file to trash manually.
-		
+
 		// volumeName := pathVolume(filePath)
 		// trashPath := ""
 		// if volumeName != "" {
@@ -122,6 +121,6 @@ func MoveToTrash(filePath string) error {
 		// 	return err
 		// }
 	}
-	
+
 	return nil
 }

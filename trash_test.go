@@ -1,9 +1,9 @@
 package trash
 
 import (
-	"path/filepath"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"testing"
 )
 
@@ -40,15 +40,15 @@ func fileExists(filePath string) bool {
 func Test_MoveToTrash(t *testing.T) {
 	setup(t)
 	defer teardown(t)
-	
+
 	filePath := testDir() + "/test"
 	touch(filePath)
-	
+
 	err := MoveToTrash(filePath)
 	if err != nil {
 		t.Errorf("Expected no error, got %s", err)
 	}
-	
+
 	if fileExists(filePath) {
 		t.Error("File was not deleted")
 	}
