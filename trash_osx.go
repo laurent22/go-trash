@@ -167,6 +167,10 @@ func MoveToTrash(filePath string) (string, error) {
 		// }
 	}
 
+	return "", nil
+
+	// Code below is not working well
+
 	trashPath, err := fileTrashPath(filePath)
 	if err != nil {
 		return "", err
