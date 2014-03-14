@@ -12,6 +12,10 @@ import (
 	"fmt"
 )
 
+func IsAvailable() bool {
+	return true
+}
+
 func MoveToTrash(filePath string) (string, error) {
 	files := []string{filePath}
 	C_files := C.makeCharArray(C.int(len(files)))
