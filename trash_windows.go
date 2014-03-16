@@ -9,7 +9,6 @@ import "C"
 
 import (
 	"errors"
-	"fmt"
 )
 
 func IsAvailable() bool {
