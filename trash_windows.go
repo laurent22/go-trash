@@ -9,8 +9,11 @@ import "C"
 
 import (
 	"errors"
-	"fmt"
 )
+
+func IsAvailable() bool {
+	return true
+}
 
 func MoveToTrash(filePath string) (string, error) {
 	files := []string{filePath}

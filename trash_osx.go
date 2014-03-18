@@ -103,6 +103,10 @@ func fileExists(filePath string) bool {
 	return err == nil
 }
 
+func IsAvailable() bool {
+	return true
+}
+
 // filePath must be an absolute path
 func MoveToTrash(filePath string) (string, error) {
 	if !fileExists(filePath) {
@@ -148,7 +152,8 @@ func MoveToTrash(filePath string) (string, error) {
 		return "", errors.New(fmt.Sprintf("scriptable Finder not available: %s", err))
 
 		// TODO: maybe based on https://github.com/morgant/tools-osx/blob/master/src/trash, move
-		// the file to trash manually.
+		// the file to trash manually. Problem is that it won't be possible to restore the files
+		// directly from the trash.
 
 		// volumeName := pathVolume(filePath)
 		// trashPath := ""
