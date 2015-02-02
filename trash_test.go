@@ -41,8 +41,12 @@ func Test_MoveToTrash(t *testing.T) {
 	setup(t)
 	defer teardown(t)
 
-	filePath := testDir() + "/test"
+	filePath := testDir() + "/go-trash-test-file"
 	touch(filePath)
+
+	if !test_fileExists(filePath) {
+		t.Fatal("Could not create test file")
+	}
 
 	_, err := MoveToTrash(filePath)
 	if err != nil {
