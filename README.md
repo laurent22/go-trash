@@ -1,6 +1,6 @@
 # go-trash - crossplatform package to move files to trash
 
-go-trash is a cross-platform package to move files to trash. Currently OSX and Windows are supported.
+go-trash is a cross-platform package to move files to trash. OSX, Windows and Linux (tested on Ubuntu) are supported.
 
 # Installing
 
@@ -10,4 +10,4 @@ go-trash is a cross-platform package to move files to trash. Currently OSX and W
 
 - On Windows, it builds successfully with MinGW, in MSYS shell.
 
-- On OSX, it should build as is.
+- On OSX and Linux, it should build as is.
