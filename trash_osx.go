@@ -103,10 +103,12 @@ func fileExists(filePath string) bool {
 	return err == nil
 }
 
+// Tells whether it is possible to move a file to the trash
 func IsAvailable() bool {
 	return true
 }
 
+// Move the given file to the trash
 // filePath must be an absolute path
 func MoveToTrash(filePath string) (string, error) {
 	if !fileExists(filePath) {

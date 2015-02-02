@@ -11,10 +11,13 @@ import (
 	"errors"
 )
 
+// Tells whether it is possible to move a file to the trash
 func IsAvailable() bool {
 	return true
 }
 
+// Move the given file to the trash
+// filePath must be an absolute path
 func MoveToTrash(filePath string) (string, error) {
 	files := []string{filePath}
 	C_files := C.makeCharArray(C.int(len(files)))

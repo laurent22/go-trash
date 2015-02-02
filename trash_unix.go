@@ -10,6 +10,7 @@ import (
 var isAvailable_ int = -1
 var toolName_ string
 
+// Tells whether it is possible to move a file to the trash
 func IsAvailable() bool {
 	if isAvailable_ < 0 {
 		toolName_ = ""
@@ -47,6 +48,8 @@ func IsAvailable() bool {
 	return false
 }
 
+// Move the given file to the trash
+// filePath must be an absolute path
 func MoveToTrash(filePath string) (string, error) {
 	if IsAvailable() {
 		err := exec.Command(toolName_, filePath).Run()
