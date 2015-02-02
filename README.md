@@ -11,3 +11,11 @@ go-trash is a cross-platform package to move files to trash. OSX, Windows and Li
 - On Windows, it builds successfully with MinGW, in MSYS shell.
 
 - On OSX and Linux, it should build as is.
+
+# Documentation
+
+http://godoc.org/github.com/laurent22/go-trash
+
+# License
+
+MIT
