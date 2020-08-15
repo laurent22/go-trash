@@ -20,9 +20,9 @@ func DoubleNullTerminatedUTF16PtrFromString(s string) *uint16 {
 }
 
 func MoveToTrash(filePath string) (string, error) {
-	if result := win.SHFileOperation(&win.SHFILEOPSTRUCT{
+	if result := SHFileOperation(&SHFILEOPSTRUCT{
 		Hwnd:                  win.HWND(0),
-		WFunc:                 win.FO_DELETE,
+		WFunc:                 FO_DELETE,
 		PFrom:                 DoubleNullTerminatedUTF16PtrFromString(filePath),
 		PTo:                   nil,
 		FFlags:                win.FOF_ALLOWUNDO | win.FOF_NOCONFIRMATION | win.FOF_NOERRORUI | win.FOF_SILENT,
