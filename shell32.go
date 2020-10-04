@@ -6,8 +6,14 @@ import (
 	"syscall"
 	"unsafe"
 
-	"github.com/lxn/win"
 	"golang.org/x/sys/windows"
+)
+
+type (
+	HANDLE  uintptr
+	HWND    HANDLE
+	BOOL    int32
+	HRESULT int32
 )
 
 const (
@@ -51,12 +57,12 @@ const (
 )
 
 type SHFILEOPSTRUCT struct {
-	Hwnd                  win.HWND
+	Hwnd                  HWND
 	WFunc                 uint32
 	PFrom                 *uint16
 	PTo                   *uint16
 	FFlags                uint32
-	FAnyOperationsAborted win.BOOL
+	FAnyOperationsAborted BOOL
 	HNameMappings         uint32
 	LpszProgressTitle     *uint16
 }
@@ -76,11 +82,11 @@ func init() {
 	shFileOperation = libshell32.NewProc("SHFileOperationW")
 }
 
-func SHFileOperation(lpFileOp *SHFILEOPSTRUCT) win.HRESULT {
+func SHFileOperation(lpFileOp *SHFILEOPSTRUCT) HRESULT {
 	ret, _, _ := syscall.Syscall(shFileOperation.Addr(), 1,
 		uintptr(unsafe.Pointer(lpFileOp)),
 		0,
 		0)
 
-	return win.HRESULT(ret)
+	return HRESULT(ret)
 }

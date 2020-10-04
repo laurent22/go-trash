@@ -6,8 +6,6 @@ import (
 	"errors"
 	"strconv"
 	"unicode/utf16"
-
-	"github.com/lxn/win"
 )
 
 // Tells whether it is possible to move a file to the trash
@@ -21,12 +19,12 @@ func DoubleNullTerminatedUTF16PtrFromString(s string) *uint16 {
 
 func MoveToTrash(filePath string) (string, error) {
 	if result := SHFileOperation(&SHFILEOPSTRUCT{
-		Hwnd:                  win.HWND(0),
+		Hwnd:                  HWND(0),
 		WFunc:                 FO_DELETE,
 		PFrom:                 DoubleNullTerminatedUTF16PtrFromString(filePath),
 		PTo:                   nil,
-		FFlags:                win.FOF_ALLOWUNDO | win.FOF_NOCONFIRMATION | win.FOF_NOERRORUI | win.FOF_SILENT,
-		FAnyOperationsAborted: win.BOOL(0),
+		FFlags:                FOF_ALLOWUNDO | FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_SILENT,
+		FAnyOperationsAborted: BOOL(0),
 		HNameMappings:         0,
 		LpszProgressTitle:     DoubleNullTerminatedUTF16PtrFromString(""), // Note: double-null termination not required
 	}); result != 0 {
